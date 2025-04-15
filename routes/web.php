@@ -6,7 +6,7 @@ use App\Http\Middleware\CheckAdmin;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DonationReportController;
-
+use App\Http\Controllers\LogsTransactionController;
 
 
 Route::get('/', function () {
@@ -16,6 +16,7 @@ Route::get('/', function () {
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 
 Route::middleware(CheckAdmin::class)->group(function () {
     Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
@@ -37,4 +38,5 @@ Route::middleware(CheckAdmin::class)->group(function () {
     Route::get('/donation-reports/{id}/edit', [DonationReportController::class, 'edit'])->name('donation-reports.edit');
     Route::patch('/donation-reports/{id}', [DonationReportController::class, 'update'])->name('donation-reports.update');
     Route::delete('/donation-reports/{id}', [DonationReportController::class, 'destroy'])->name('donation-reports.destroy');
+    Route::get('/logs-transactions', [LogsTransactionController::class, 'index'])->name('logs-transactions.index');
 });

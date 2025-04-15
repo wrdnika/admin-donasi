@@ -24,6 +24,7 @@ class SupabaseService
         ]);
     }
 
+
     public function getData($table, $filters = [])
     {
         try {
@@ -51,4 +52,18 @@ class SupabaseService
             return ['error' => $e->getMessage()];
         }
     }
+    public function getTransactionsWithRelations()
+    {
+        try {
+            $url = $this->baseUrl . 'transactions?select=id,amount,status,created_at,order_id,transaction_time,snap_token,'
+                . 'users(email),profiles(full_name),campaigns(title)';
+
+            $response = $this->client->get($url);
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (RequestException $e) {
+            return ['error' => $e->getMessage()];
+        }
+
+    }
+
 }
