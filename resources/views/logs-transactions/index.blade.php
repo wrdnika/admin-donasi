@@ -2,20 +2,17 @@
 
 @section('content')
 @push('styles')
-<!-- DataTables CSS + Custom Modern Theme -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <style>
-    /* Modernized DataTables styling */
     .dataTables_wrapper {
         font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
         margin-bottom: 2rem;
     }
 
-    /* Search box styling */
     .dataTables_filter input {
         border: 1px solid #e2e8f0 !important;
         border-radius: 8px !important;
@@ -39,7 +36,6 @@
         font-size: 14px;
     }
 
-    /* Export buttons styling */
     .dataTables_wrapper .dt-buttons {
         margin-bottom: 1.5rem;
         display: flex;
@@ -92,7 +88,6 @@
         color: #4338ca !important;
     }
 
-    /* Table styling */
     .dataTable {
         border-collapse: separate !important;
         border-spacing: 0 !important;
@@ -133,7 +128,6 @@
         border-bottom: none !important;
     }
 
-    /* Pagination styling */
     .dataTables_paginate {
         padding: 1rem 0 !important;
         display: flex !important;
@@ -175,20 +169,17 @@
         cursor: not-allowed !important;
     }
 
-    /* Info text styling */
     .dataTables_info {
         font-size: 14px !important;
         color: #6b7280 !important;
         padding: 1rem 0 !important;
     }
 
-    /* Responsive design */
     .table-responsive {
         border-radius: 10px !important;
         overflow: hidden !important;
     }
 
-    /* Status badges */
     .badge {
         padding: 6px 12px;
         border-radius: 6px;
@@ -214,7 +205,6 @@
         color: #b91c1c !important;
     }
 
-    /* Filter container styling */
     .filter-container {
         background: #fff;
         border-radius: 12px;
@@ -289,7 +279,6 @@
         color: #4b5563;
     }
 
-    /* Responsive adjustments */
     @media (max-width: 768px) {
         .filter-inputs {
             flex-direction: column;
@@ -395,13 +384,12 @@
                 zeroRecords: "<div class='text-center p-4'><i class='fas fa-search text-muted fa-3x mb-3'></i><br>Tidak ada data yang cocok dengan pencarian Anda</div>"
             },
             responsive: true,
-            order: [[7, 'desc']], // Sort by transaction time by default
+            order: [[7, 'desc']],
             pageLength: 10,
             lengthChange: true,
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
             stateSave: true,
             drawCallback: function() {
-                // Apply styling to status badges after table draw
                 $('#logsTable tbody tr td:nth-child(6)').each(function() {
                     let status = $(this).text().trim().toLowerCase();
                     if (status.includes('berhasil') || status.includes('success')) {
@@ -413,7 +401,6 @@
                     }
                 });
 
-                // Add tooltip to truncated cells
                 $('#logsTable tbody tr td').each(function(){
                     if(this.offsetWidth < this.scrollWidth && !$(this).attr('title')) {
                         $(this).attr('title', $(this).text());
@@ -422,38 +409,66 @@
             }
         });
 
-        // Enhanced date range filter
+function populateDropdowns() {
+    let campaignSet = new Set();
+    let nameSet = new Set();
+
+    table.rows().every(function () {
+        let data = this.data();
+
+        let campaignText = $('<div>').html(data[3]).text().trim().replace(/\s+/g, ' ');
+        let nameText = $('<div>').html(data[2]).text().trim().replace(/\s+/g, ' ');
+
+        campaignSet.add(campaignText);
+        nameSet.add(nameText);
+    });
+
+    $('#campaignFilter').append(
+        Array.from(campaignSet).sort().map(c => `<option value="${c}">${c}</option>`)
+    );
+
+    $('#fullNameFilter').append(
+        Array.from(nameSet).sort().map(n => `<option value="${n}">${n}</option>`)
+    );
+}
+
+$('#campaignFilter').on('change', function () {
+    let selected = $(this).val()?.trim().replace(/\s+/g, ' ') || '';
+    console.log('Filter dipilih (clean):', selected);
+    table.column(3).search(selected, false, false).draw();
+});
+
+$('#fullNameFilter').on('change', function () {
+    let selected = $(this).val()?.trim().replace(/\s+/g, ' ') || '';
+    table.column(2).search(selected, false, false).draw();
+});
+setTimeout(populateDropdowns, 500);
+
 $('#filterBtn').on('click', function() {
     let startDate = $('#startDate').val();
     let endDate = $('#endDate').val();
 
     if (startDate && endDate) {
-        // Add loading indicator
-        // $(this).html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Memproses...');
-        // $(this).prop('disabled', true);
-
         setTimeout(() => {
             filterByDateRange(startDate, endDate);
             $(this).html('<i class="fas fa-search me-1"></i> Filter');
             $(this).prop('disabled', false);
         }, 500);
     } else {
-        // Show elegant toast notification
         showNotification('Peringatan', 'Silakan masukkan kedua tanggal untuk melakukan filter', 'warning');
     }
 });
 
-// Clear filter button with animation
 $('#clearFilterBtn').on('click', function() {
-    // Add loading indicator
     $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
     $(this).prop('disabled', true);
 
     setTimeout(() => {
         $('#startDate').val('');
         $('#endDate').val('');
+        $('#campaignFilter').val('');
+        $('#fullNameFilter').val('');
 
-        // Pastikan semua search filter dihapus dan DataTable di-reset
         if ($.fn.dataTable.ext.search.length > 0) {
             $.fn.dataTable.ext.search.pop();
         }
@@ -462,32 +477,26 @@ $('#clearFilterBtn').on('click', function() {
         $(this).html('<i class="fas fa-times me-1"></i> Clear');
         $(this).prop('disabled', false);
 
-        // Show success notification
         showNotification('Berhasil', 'Filter berhasil dihapus', 'success');
     }, 300);
 });
 
-// Date range filter function
 function filterByDateRange(start, end) {
-    // Convert to timestamps for comparison
     const startTimestamp = new Date(start).getTime();
-    const endTimestamp = new Date(end).getTime() + (24 * 60 * 60 * 1000 - 1); // Include the full end date
+    const endTimestamp = new Date(end).getTime() + (24 * 60 * 60 * 1000 - 1);
 
-    // PERBAIKAN: Hapus filter sebelumnya jika ada
     while ($.fn.dataTable.ext.search.length > 0) {
         $.fn.dataTable.ext.search.pop();
     }
 
     // Tambahkan filter baru
     $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-        // Parse transaction date (data[7] is the transaction time column)
         let dateText = data[7].trim();
         let datePattern = /(\d+)\s+([A-Za-z]+)\s+(\d+),\s+(\d+):(\d+)/;
         let match = dateText.match(datePattern);
 
-        if (!match) return true; // If can't parse date, include the row
+        if (!match) return true;
 
-        // Convert month name to month number
         let monthNames = {
             "Jan": 0, "Feb": 1, "Mar": 2, "Apr": 3, "Mei": 3, "May": 4,
             "Jun": 5, "Jul": 6, "Agt": 7, "Aug": 7, "Sep": 8, "Okt": 9,
@@ -510,21 +519,17 @@ function filterByDateRange(start, end) {
 
     table.draw();
 
-    // Show the active filter info
     const startFormatted = new Date(start).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'});
     const endFormatted = new Date(end).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'});
     showNotification('Filter Aktif', `Menampilkan data dari ${startFormatted} hingga ${endFormatted}`, 'info');
     // Filter akan dihapus saat tombol Clear diklik atau filter baru diterapkan
 }
 
-// Notification function
 function showNotification(title, message, type) {
-    // Check if toast container exists
     if ($('#toast-container').length === 0) {
         $('body').append('<div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>');
     }
 
-    // Create toast HTML
     const toast = `
         <div class="toast align-items-center border-0 bg-${type === 'warning' ? 'warning' : type === 'success' ? 'success' : 'light'} text-${type === 'warning' || type === 'success' ? 'dark' : 'dark'}" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
@@ -542,7 +547,6 @@ function showNotification(title, message, type) {
         </div>
     `;
 
-    // Append and show toast
     const $toast = $(toast).appendTo('#toast-container');
     const bsToast = new bootstrap.Toast($toast[0], {
         autohide: true,
@@ -550,7 +554,6 @@ function showNotification(title, message, type) {
     });
     bsToast.show();
 
-    // Remove toast after it's hidden
     $toast.on('hidden.bs.toast', function() {
         $(this).remove();
     });
@@ -572,7 +575,6 @@ function showNotification(title, message, type) {
         </div>
     </div>
 
-    <!-- Filter Date Range -->
     <div class="row">
         <div class="col-12">
             <div class="filter-container p-4 rounded-lg shadow-md bg-white mb-5 border border-gray-100">
@@ -584,6 +586,7 @@ function showNotification(title, message, type) {
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
                     <div class="relative">
                         <label for="startDate" class="text-xs text-gray-500 mb-1 block">Dari Tanggal</label>
                         <div class="relative">
@@ -612,6 +615,24 @@ function showNotification(title, message, type) {
                             <i class="fas fa-redo-alt"></i>
                         </button>
                     </div>
+                                        <!-- Filter Judul Campaign -->
+<div class="relative">
+    <label for="campaignFilter" class="text-xs text-gray-500 mb-1 block">Filter Judul Campaign</label>
+    <select id="campaignFilter" class="form-control py-2.5 w-full border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all">
+        <option value="">Semua Campaign</option>
+        <!-- Isi akan di-generate oleh jQuery -->
+    </select>
+</div>
+
+<!-- Filter Full Name -->
+<div class="relative">
+    <label for="fullNameFilter" class="text-xs text-gray-500 mb-1 block">Filter Nama Donatur</label>
+    <select id="fullNameFilter" class="form-control py-2.5 w-full border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all">
+        <option value="">Semua Nama</option>
+        <!-- Isi akan di-generate oleh jQuery -->
+    </select>
+</div>
+
                 </div>
             </div>
         </div>

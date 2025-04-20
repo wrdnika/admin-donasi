@@ -17,6 +17,7 @@
         <table class="w-full table-auto">
             <thead class="bg-gray-100">
                 <tr>
+                    <th class="p-3 text-left">Judul Campaign</th>
                     <th class="p-3 text-left">Deskripsi</th>
                     <th class="p-3 text-left">Gambar</th>
                     <th class="p-3 text-center">Aksi</th>
@@ -25,7 +26,12 @@
             <tbody>
                 @foreach ($reports as $report)
                 <tr class="border-t">
-                    <td class="p-3">{{ $report['report_description'] }}</td>
+                    <td class="p-3">
+                        {{ $report['campaigns']['title'] ?? '-' }}
+                    </td>
+                    <td class="p-3">
+                        {{ $report['report_description'] }}
+                    </td>
                     <td class="p-3">
                         <img src="{{ $report['report_image'] }}" class="w-20 h-20 object-cover rounded" alt="Report Image">
                     </td>
