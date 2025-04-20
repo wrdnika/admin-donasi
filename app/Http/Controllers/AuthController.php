@@ -46,7 +46,9 @@ class AuthController extends Controller
             $data = json_decode($response->getBody(), true);
 
             if (!isset($data['access_token'])) {
-                return back()->withErrors(['login' => 'Login gagal: ' . json_encode($data)]);
+                return back()->withErrors([
+                    'login' => 'Login gagal. Silakan periksa kembali email dan password Anda.'
+                ]);
             }
 
             // Simpan token yang benar
@@ -55,7 +57,25 @@ class AuthController extends Controller
 
             return redirect()->route('campaigns.index');
         } catch (RequestException $e) {
-            return back()->withErrors(['login' => 'Login gagal: ' . $e->getMessage()]);
+            // Ambil pesan error dari Supabase jika ada
+            $response = $e->getResponse();
+            $errorMessage = 'Login gagal. Silakan periksa kembali email dan password Anda.';
+
+            if ($response) {
+                $body = json_decode($response->getBody(), true);
+
+                if (isset($body['error'])) {
+                    if ($body['error'] === 'invalid_grant') {
+                        $errorMessage = 'Email atau password tidak sesuai.';
+                    } elseif ($body['error'] === 'email not confirmed') {
+                        $errorMessage = 'Email Anda belum dikonfirmasi. Silakan cek email Anda.';
+                    } else {
+                        $errorMessage = 'Login gagal: ' . $body['error_description'] ?? $body['error'];
+                    }
+                }
+            }
+
+            return back()->withErrors(['login' => $errorMessage]);
         }
     }
 

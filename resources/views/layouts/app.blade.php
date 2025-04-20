@@ -6,59 +6,93 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Donasi IKBS Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#16a34a",
+            }
+          }
+        }
+      }
+    </script>
+    <!-- Heroicons CDN -->
+    <script src="https://unpkg.com/feather-icons"></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 text-gray-800">
     <div class="flex h-screen overflow-hidden">
-        <!-- Mobile Sidebar Toggle Button -->
-        <div class="md:hidden fixed top-0 left-0 z-50 bg-white w-full p-4 flex justify-between items-center shadow-md">
-            <h2 class="text-lg font-bold text-green-700">Donasi IKBS</h2>
+
+        <!-- Mobile Navbar -->
+        <div class="md:hidden fixed top-0 left-0 z-50 w-full bg-white p-4 shadow flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <img src="/logo.png" alt="Logo Admin" class="h-8" />
+                <h2 class="text-xl font-bold text-primary">Donasi IKBS</h2>
+            </div>
             <button id="sidebarToggle" class="text-gray-700 focus:outline-none">
-                ☰
+                <i data-feather="menu" class="w-6 h-6"></i>
             </button>
         </div>
 
         <!-- Sidebar -->
-        <div id="sidebar" class="fixed z-40 inset-y-0 left-0 w-64 bg-white shadow-md p-5 transform -translate-x-full transition-transform duration-200 ease-in-out md:relative md:translate-x-0 md:flex flex-col h-full">
+        <aside id="sidebar" class="fixed z-40 inset-y-0 left-0 w-64 bg-white shadow-lg p-5 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex flex-col h-full">
+            <!-- Logo & Title -->
             <div class="mt-12 md:mt-0">
-                <h2 class="text-xl font-bold text-green-700 mb-6 hidden md:block">Donasi IKBS Dashboard</h2>
-                <ul class="space-y-4">
+                <div class="flex items-center gap-4 mb-6 hidden md:block">
+                    <img src="/logo.png" alt="Logo Admin hidden md:block" class="h-12" />
+                    <h2 class="text-xl font-bold text-primary hidden md:block">Donasi IKBS</h2>
+                </div>
+
+                <!-- Navigation -->
+                <ul class="space-y-2 text-sm font-medium">
                     <li>
-                        <a href="{{ route('campaigns.index') }}" class="block p-2 rounded-lg text-gray-700 hover:bg-green-100 hover:text-green-700 transition">Campaigns</a>
+                        <a href="{{ route('campaigns.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 hover:text-primary transition duration-200 {{ request()->routeIs('campaigns.index') ? 'bg-primary/10 text-primary' : 'text-gray-700' }}">
+                            <i data-feather="flag"></i> Campaigns
+                        </a>
                     </li>
                     <li>
-                        <a href="{{ route('profiles.index') }}" class="block p-2 rounded-lg text-gray-700 hover:bg-green-100 hover:text-green-700 transition">Profile User</a>
+                        <a href="{{ route('profiles.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 hover:text-primary transition duration-200 {{ request()->routeIs('profiles.index') ? 'bg-primary/10 text-primary' : 'text-gray-700' }}">
+                            <i data-feather="user"></i> Profile User
+                        </a>
                     </li>
                     <li>
-                        <a href="{{ route('donation-reports.index') }}" class="block p-2 rounded-lg text-gray-700 hover:bg-green-100 hover:text-green-700 transition">Donation Report</a>
+                        <a href="{{ route('donation-reports.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 hover:text-primary transition duration-200 {{ request()->routeIs('donation-reports.index') ? 'bg-primary/10 text-primary' : 'text-gray-700' }}">
+                            <i data-feather="file-text"></i> Donation Report
+                        </a>
                     </li>
                     <li>
-                        <a href="{{ route('logs-transactions.index') }}" class="block p-2 rounded-lg text-gray-700 hover:bg-green-100 hover:text-green-700 transition">Log Transaction</a>
+                        <a href="{{ route('logs-transactions.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 hover:text-primary transition duration-200 {{ request()->routeIs('logs-transactions.index') ? 'bg-primary/10 text-primary' : 'text-gray-700' }}">
+                            <i data-feather="activity"></i> Log Transaction
+                        </a>
                     </li>
                 </ul>
             </div>
 
-            <div class="mt-auto">
+            <!-- Logout Button -->
+            <div class="mt-auto pt-6 border-t">
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
-                    <button type="submit" class="w-full block p-2 rounded-lg text-gray-700 hover:bg-red-100 hover:text-red-600 transition">Logout</button>
+                    <button type="submit" class="w-full flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-red-100 hover:text-red-600 transition">
+                        <i data-feather="log-out"></i> Logout
+                    </button>
                 </form>
             </div>
-        </div>
+        </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 overflow-y-auto p-6 mt-16 md:mt-0">
+        <main class="flex-1 overflow-y-auto p-6 mt-16 md:mt-0">
             @yield('content')
-        </div>
+        </main>
     </div>
 
     @stack('scripts')
 
     <script>
-        // Toggle sidebar untuk mobile
         document.getElementById('sidebarToggle')?.addEventListener('click', () => {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('-translate-x-full');
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
         });
+
+        feather.replace();
     </script>
 </body>
 </html>
