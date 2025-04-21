@@ -28,6 +28,7 @@
       border-radius: 1rem;
       background-color: rgba(255, 255, 255, 0.4);
       padding: 2rem;
+      margin: 80px;
       box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
       backdrop-filter: blur(10px) !important;
     }
@@ -58,7 +59,7 @@
 
   </style>
 </head>
-<body class="d-flex justify-content-center align-items-center vh-100">
+<body class="d-flex justify-content-center align-items-center dvh-100">
 
   <div class="login-card text-center">
     <div class="login-icon">
