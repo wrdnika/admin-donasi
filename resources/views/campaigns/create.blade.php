@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="max-w-xl mx-auto p-4 sm:p-6">
-        <h1 class="text-2xl font-bold text-gray-700 mb-6">Tambah Campaign</h1>
+        <h1 class="text-2xl font-bold text-gray-700 mb-6">Tambah Kampanye</h1>
 
         <form action="{{ route('campaigns.store') }}" method="POST" class="bg-white p-6 shadow-md rounded-lg space-y-4">
             @csrf

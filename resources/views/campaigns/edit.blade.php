@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="max-w-lg mx-auto">
-        <h1 class="text-2xl font-bold text-gray-700 mb-6">Edit Campaign</h1>
+        <h1 class="text-2xl font-bold text-gray-700 mb-6">Edit Kampanye</h1>
 
         <form action="{{ route('campaigns.update', $campaign['id']) }}" method="POST" class="bg-white p-6 shadow-md rounded-lg">
             @csrf

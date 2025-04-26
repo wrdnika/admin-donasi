@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="max-w-2xl mx-auto p-6 bg-white rounded-2xl shadow-md space-y-6">
-    
+
     <h1 class="text-2xl font-semibold text-gray-800">Tambah Laporan Donasi</h1>
 
     {{-- Error Handling --}}
@@ -22,9 +22,9 @@
 
         {{-- Campaign Select --}}
         <div>
-            <label for="campaign_id" class="block text-sm font-medium text-gray-700 mb-1">Pilih Campaign</label>
+            <label for="campaign_id" class="block text-sm font-medium text-gray-700 mb-1">Pilih Kampanye</label>
             <select name="campaign_id" id="campaign_id" class="block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 text-sm p-2.5" required>
-                <option value="">-- Pilih Campaign --</option>
+                <option value="">-- Pilih Kampanye --</option>
                 @foreach($campaigns as $campaign)
                     <option value="{{ $campaign['id'] }}">{{ $campaign['title'] }}</option>
                 @endforeach

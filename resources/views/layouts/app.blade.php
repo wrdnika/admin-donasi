@@ -47,33 +47,33 @@
                 <ul class="space-y-2 text-sm font-medium">
                     <li>
                         <a href="{{ route('campaigns.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 hover:text-primary transition duration-200 {{ request()->routeIs('campaigns.index') ? 'bg-primary/10 text-primary' : 'text-gray-700' }}">
-                            <i data-feather="flag"></i> Campaigns
+                            <i data-feather="flag"></i> Kampanye
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('profiles.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 hover:text-primary transition duration-200 {{ request()->routeIs('profiles.index') ? 'bg-primary/10 text-primary' : 'text-gray-700' }}">
-                            <i data-feather="user"></i> Profile User
+                            <i data-feather="user"></i> Profil pengguna
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('donation-reports.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 hover:text-primary transition duration-200 {{ request()->routeIs('donation-reports.index') ? 'bg-primary/10 text-primary' : 'text-gray-700' }}">
-                            <i data-feather="file-text"></i> Donation Report
+                            <i data-feather="file-text"></i> Donasi tersalurkan
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('logs-transactions.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 hover:text-primary transition duration-200 {{ request()->routeIs('logs-transactions.index') ? 'bg-primary/10 text-primary' : 'text-gray-700' }}">
-                            <i data-feather="activity"></i> Log Transaction
+                            <i data-feather="activity"></i> Histori transaksi
                         </a>
                     </li>
                 </ul>
             </div>
 
             <!-- Logout Button -->
-            <div class="mt-auto pt-6 border-t">
+            <div class="mt-auto py-1 border-t">
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
-                    <button type="submit" class="w-full flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-red-100 hover:text-red-600 transition">
-                        <i data-feather="log-out"></i> Logout
+                    <button type="submit" class="w-full flex items-center gap-3 p-1 rounded-lg text-gray-700 hover:bg-red-100 hover:text-red-600 transition">
+                        <i data-feather="log-out"></i> Keluar
                     </button>
                 </form>
             </div>

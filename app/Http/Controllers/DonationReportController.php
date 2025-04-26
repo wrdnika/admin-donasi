@@ -24,14 +24,12 @@ class DonationReportController extends Controller
         $response = Http::withHeaders([
             'apikey' => $this->supabaseKey,
             'Authorization' => 'Bearer ' . $this->supabaseKey
-        ])->get("{$this->supabaseUrl}/rest/v1/donation_reports?select=*,campaigns(title)");
+        ])->get("{$this->supabaseUrl}/rest/v1/donation_reports?select=*,campaigns(title,collected_amount,goal_amount)");
 
         $reports = $response->json();
 
-
         return view('donation-reports.index', compact('reports'));
     }
-
 
     public function create()
     {

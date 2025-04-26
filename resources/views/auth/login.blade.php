@@ -21,14 +21,16 @@
         background: url('/background-login.png') no-repeat center center fixed;
         background-size: cover;
         font-family: 'Segoe UI', sans-serif;
+        height: 100dvh;
     }
+
     .login-card {
       width: 100%;
       max-width: 420px;
       border-radius: 1rem;
       background-color: rgba(255, 255, 255, 0.4);
       padding: 2rem;
-      margin: 80px;
+      margin: 10px;
       box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
       backdrop-filter: blur(10px) !important;
     }
@@ -59,7 +61,7 @@
 
   </style>
 </head>
-<body class="d-flex justify-content-center align-items-center dvh-100">
+<body class="d-flex justify-content-center align-items-center">
 
   <div class="login-card text-center">
     <div class="login-icon">

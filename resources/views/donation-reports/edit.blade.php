@@ -23,7 +23,7 @@
 
         {{-- Campaign ID --}}
         <div>
-            <label for="campaign_id" class="block text-sm font-medium text-gray-700 mb-1">ID Campaign</label>
+            <label for="campaign_id" class="block text-sm font-medium text-gray-700 mb-1">ID Kampanye</label>
             <input type="text" name="campaign_id" id="campaign_id" value="{{ $report['campaign_id'] }}" class="block w-full border border-gray-300 rounded-lg shadow-sm bg-gray-100 text-sm p-2.5" readonly>
         </div>
 

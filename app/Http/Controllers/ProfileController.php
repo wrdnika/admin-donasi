@@ -24,19 +24,31 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function index()
-    {
-        try {
-            $response = $this->client->get("{$this->supabaseUrl}/rest/v1/profiles", [
-                'query' => ['select' => 'id,full_name,phone,created_at']
-            ]);
+    public function index(Request $request)
+{
+    try {
+        $search = $request->query('search');
 
-            $profiles = json_decode($response->getBody(), true);
-            return view('profiles.index', compact('profiles'));
-        } catch (RequestException $e) {
-            return back()->withErrors(['error' => 'Gagal mengambil data profil: ' . $e->getMessage()]);
+        $queryParams = [
+            'select' => 'id,full_name,phone,created_at',
+            'order' => 'full_name.asc',
+        ];
+
+        if ($search) {
+            $queryParams['or'] = sprintf('(full_name.ilike.*%s*,phone.ilike.*%s*)', $search, $search);
         }
+
+        $response = $this->client->get("{$this->supabaseUrl}/rest/v1/profiles", [
+            'query' => $queryParams
+        ]);
+
+        $profiles = json_decode($response->getBody(), true);
+
+        return view('profiles.index', compact('profiles'));
+    } catch (RequestException $e) {
+        return back()->withErrors(['error' => 'Gagal mengambil data profil: ' . $e->getMessage()]);
     }
+}
 
     public function create()
     {

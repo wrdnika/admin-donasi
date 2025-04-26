@@ -561,20 +561,7 @@ function showNotification(title, message, type) {
     });
 </script>
 @endpush
-<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <h2 class="page-title mb-3 mb-md-0">
-                    <i class="fas fa-history me-2"></i>Logs Transactions
-                </h2>
-                <div class="d-flex align-items-center">
-                    <span class="badge bg-primary me-2">Total: {{ count($transactions) }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
+<div class="container-fluid">
     <div class="row">
         <div class="col-12">
             <div class="filter-container p-4 rounded-lg shadow-md bg-white mb-5 border border-gray-100">
@@ -617,9 +604,9 @@ function showNotification(title, message, type) {
                     </div>
                                         <!-- Filter Judul Campaign -->
 <div class="relative">
-    <label for="campaignFilter" class="text-xs text-gray-500 mb-1 block">Filter Judul Campaign</label>
+    <label for="campaignFilter" class="text-xs text-gray-500 mb-1 block">Filter Judul Kampanye</label>
     <select id="campaignFilter" class="form-control py-2.5 w-full border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all">
-        <option value="">Semua Campaign</option>
+        <option value="">Semua Kampanye</option>
         <!-- Isi akan di-generate oleh jQuery -->
     </select>
 </div>
@@ -650,13 +637,13 @@ function showNotification(title, message, type) {
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="py-3 px-4 text-uppercase text-xs font-semibold text-gray-600">#</th>
-                                    <th class="py-3 px-4 text-uppercase text-xs font-semibold text-gray-600">User Email</th>
-                                    <th class="py-3 px-4 text-uppercase text-xs font-semibold text-gray-600">Full Name</th>
-                                    <th class="py-3 px-4 text-uppercase text-xs font-semibold text-gray-600">Campaign Title</th>
-                                    <th class="py-3 px-4 text-uppercase text-xs font-semibold text-gray-600">Amount</th>
+                                    <th class="py-3 px-4 text-uppercase text-xs font-semibold text-gray-600">Email</th>
+                                    <th class="py-3 px-4 text-uppercase text-xs font-semibold text-gray-600">Nama Lengkap</th>
+                                    <th class="py-3 px-4 text-uppercase text-xs font-semibold text-gray-600">Judul Kampanye</th>
+                                    <th class="py-3 px-4 text-uppercase text-xs font-semibold text-gray-600">Jumlah</th>
                                     <th class="py-3 px-4 text-uppercase text-xs font-semibold text-gray-600">Status</th>
                                     <th class="py-3 px-4 text-uppercase text-xs font-semibold text-gray-600">Order ID</th>
-                                    <th class="py-3 px-4 text-uppercase text-xs font-semibold text-gray-600">Transaction Time</th>
+                                    <th class="py-3 px-4 text-uppercase text-xs font-semibold text-gray-600">Waktu Transaksi</th>
                                 </tr>
                             </thead>
                             <tbody class="border-top-0">
