@@ -34,16 +34,29 @@
         </div>
 
         {{-- Preview Gambar --}}
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Gambar Saat Ini</label>
-            <img src="{{ $report['report_image'] }}" alt="Current Image" class="w-48 h-48 object-cover rounded-lg border border-gray-200 shadow-sm mb-2">
-        </div>
+<div>
+    <label class="block text-sm font-medium text-gray-700 mb-1">Gambar Saat Ini</label>
+
+    <div class="flex flex-wrap gap-4">
+        @php
+            $reportImages = is_string($report['report_image']) ? json_decode($report['report_image'], true) : $report['report_image'];
+        @endphp
+
+        @if(is_array($reportImages))
+            @foreach($reportImages as $image)
+                <img src="{{ $image }}" alt="Current Image" class="w-32 h-32 object-cover rounded-lg border border-gray-200 shadow-sm">
+            @endforeach
+        @else
+            <img src="{{ $report['report_image'] }}" alt="Current Image" class="w-32 h-32 object-cover rounded-lg border border-gray-200 shadow-sm">
+        @endif
+    </div>
+</div>
 
         {{-- Upload Gambar Baru --}}
         <div>
-            <label for="report_image" class="block text-sm font-medium text-gray-700 mb-1">Ganti Gambar (Opsional)</label>
-            <input type="file" name="report_image" id="report_image" accept="image/*" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-green-500 focus:border-green-500 p-2.5">
-            <p class="mt-1 text-xs text-gray-500">Kosongkan jika tidak ingin mengubah gambar</p>
+            <label for="report_image" class="block text-sm font-medium text-gray-700 mb-1">Upload Gambar Baru (Opsional)</label>
+            <input type="file" name="report_image[]" id="report_image" multiple accept="image/*" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-green-500 focus:border-green-500 p-2.5">
+            <p class="mt-1 text-xs text-gray-500">Kosongkan jika tidak ingin mengubah gambar.</p>
         </div>
 
         {{-- Buttons --}}

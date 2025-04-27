@@ -43,7 +43,45 @@
                         {{ $report['report_description'] }}
                     </td>
                     <td class="p-3">
-                        <img src="{{ $report['report_image'] }}" class="w-20 h-20 object-cover rounded" alt="Report Image">
+                        @if (!empty($report['report_image']))
+                            <div id="splide-{{ $report['id'] }}" class="splide" style="width: 80px;">
+                                <div class="splide__track">
+                                    <ul class="splide__list">
+                                        @foreach ($report['report_image'] as $imgUrl)
+                                            <li class="splide__slide">
+                                                <img src="{{ $imgUrl }}" class="w-20 h-20 object-cover rounded cursor-pointer" alt="Report Image" onclick="openImageModal('{{ $imgUrl }}')">
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+
+                                <div class="custom-arrows mt-2 flex justify-center gap-2">
+                                    <button class="custom-arrow custom-prev"><</button>
+                                    <button class="custom-arrow custom-next">></button>
+                                </div>
+                            </div>
+
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    var splide = new Splide('#splide-{{ $report["id"] }}', {
+                                        type: 'loop',
+                                        perPage: 1,
+                                        arrows: false,
+                                        pagination: false,
+                                        autoplay: true,
+                                        interval: 3000,
+                                    }).mount();
+
+                                    document.querySelector('#splide-{{ $report["id"] }} .custom-prev').addEventListener('click', function () {
+                                        splide.go('<');
+                                    });
+
+                                    document.querySelector('#splide-{{ $report["id"] }} .custom-next').addEventListener('click', function () {
+                                        splide.go('>');
+                                    });
+                                });
+                            </script>
+                        @endif
                     </td>
                     <td class="p-3 text-center flex justify-center space-x-2">
                         <a href="{{ route('donation-reports.edit', $report['id']) }}" class="text-yellow-500 hover:text-yellow-600 inline-flex items-center gap-1">
@@ -53,13 +91,37 @@
                         <form action="{{ route('donation-reports.destroy', $report['id']) }}" method="POST">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:underline inline-flex items-center" onclick="return confirm('Hapus data ini?')"><i data-feather="trash-2" class="w-4 h-4"></i> Hapus</button>
+                            <button type="submit" class="text-red-600 hover:underline inline-flex items-center" onclick="return confirm('Hapus data ini?')">
+                                <i data-feather="trash-2" class="w-4 h-4"></i> Hapus
+                            </button>
                         </form>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
+        <!-- Modal Popup -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-70 hidden justify-center items-center z-50">
+    <span class="absolute top-4 right-4 text-white text-3xl cursor-pointer" onclick="closeImageModal()">&times;</span>
+    <img id="modalImage" class="max-w-full max-h-full rounded shadow-lg">
+</div>
+
+<script>
+    function openImageModal(imageUrl) {
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        modalImage.src = imageUrl;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeImageModal() {
+        const modal = document.getElementById('imageModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+</script>
+
     </div>
 </div>
 @endsection

@@ -19,6 +19,31 @@
     </script>
     <!-- Heroicons CDN -->
     <script src="https://unpkg.com/feather-icons"></script>
+    <!-- Splide CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.3/dist/css/splide.min.css">
+    <style>
+        .custom-arrows {
+            margin-top: 8px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .custom-arrow {
+            background-color: #10B981;
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .custom-arrow:hover {
+            background-color: #059669;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
     <div class="flex h-screen overflow-hidden">
@@ -94,5 +119,7 @@
 
         feather.replace();
     </script>
+    <!-- Splide JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.3/dist/js/splide.min.js"></script>
 </body>
 </html>

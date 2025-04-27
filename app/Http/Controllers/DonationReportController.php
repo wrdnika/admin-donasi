@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class DonationReportController extends Controller
 {
@@ -48,43 +49,39 @@ class DonationReportController extends Controller
         $request->validate([
             'campaign_id' => 'required|uuid',
             'report_description' => 'required|string',
-            'report_image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'report_image.*' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // Upload gambar ke Supabase Storage
-        $image = $request->file('report_image');
-        $fileName = Str::uuid() . '.' . $image->getClientOriginalExtension();
+        $imageUrls = [];
 
-        // Baca file sebagai resource stream daripada string
-        $fileResource = fopen($image->getRealPath(), 'r');
+        if ($request->hasFile('report_image')) {
+            foreach ($request->file('report_image') as $image) {
+                $fileName = Str::uuid() . '.' . $image->getClientOriginalExtension();
+                $fileResource = fopen($image->getRealPath(), 'r');
 
-        // Upload file ke Supabase Storage menggunakan stream
-        $upload = Http::withHeaders([
-            'apikey' => $this->supabaseKey,
-            'Authorization' => 'Bearer ' . $this->supabaseKey,
-            'Content-Type' => 'application/octet-stream'
-        ])->withBody($fileResource, 'application/octet-stream')
-          ->put("{$this->storageUrl}/object/donation-reports/$fileName");
+                $upload = Http::withHeaders([
+                    'apikey' => $this->supabaseKey,
+                    'Authorization' => 'Bearer ' . $this->supabaseKey,
+                    'Content-Type' => 'application/octet-stream'
+                ])->withBody($fileResource, 'application/octet-stream')
+                  ->put("{$this->storageUrl}/object/donation-reports/$fileName");
 
-        // Tutup resource
-        fclose($fileResource);
+                fclose($fileResource);
 
-        if (!$upload->successful()) {
-            return back()->with('error', 'Gagal upload gambar ke Supabase Storage!');
+                if ($upload->successful()) {
+                    $publicUrl = "{$this->supabaseUrl}/storage/v1/object/public/donation-reports/$fileName";
+                    $imageUrls[] = $publicUrl;
+                }
+            }
         }
 
-        // Perbaiki URL public gambarnya
-        $publicUrl = "{$this->supabaseUrl}/storage/v1/object/public/donation-reports/$fileName";
-
-        // Buat array data
         $data = [
             'campaign_id' => $request->campaign_id,
             'report_description' => $request->report_description,
-            'report_image' => $publicUrl,
+            'report_image' => $imageUrls,
             'created_at' => now()->toIso8601String()
         ];
 
-        // Gunakan opsi JSON_UNESCAPED_UNICODE dan JSON_UNESCAPED_SLASHES
         $response = Http::withHeaders([
             'apikey' => $this->supabaseKey,
             'Authorization' => 'Bearer ' . $this->supabaseKey,
@@ -96,6 +93,7 @@ class DonationReportController extends Controller
         }
 
         return redirect()->route('donation-reports.index')->with('success', 'Laporan donasi berhasil ditambahkan.');
+
     }
 
 
@@ -115,7 +113,7 @@ class DonationReportController extends Controller
     {
         $request->validate([
             'report_description' => 'required|string',
-            'report_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'report_image.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $data = [
@@ -123,27 +121,28 @@ class DonationReportController extends Controller
         ];
 
         if ($request->hasFile('report_image')) {
-            $image = $request->file('report_image');
-            $fileName = Str::uuid() . '.' . $image->getClientOriginalExtension();
+            $imageUrls = [];
 
-            $fileResource = fopen($image->getRealPath(), 'r');
+            foreach ($request->file('report_image') as $image) {
+                $fileName = Str::uuid() . '.' . $image->getClientOriginalExtension();
+                $fileResource = fopen($image->getRealPath(), 'r');
 
-            $upload = Http::withHeaders([
-                'apikey' => $this->supabaseKey,
-                'Authorization' => 'Bearer ' . $this->supabaseKey,
-                'Content-Type' => 'application/octet-stream'
-            ])->withBody($fileResource, 'application/octet-stream')
-              ->put("{$this->storageUrl}/object/donation-reports/$fileName");
+                $upload = Http::withHeaders([
+                    'apikey' => $this->supabaseKey,
+                    'Authorization' => 'Bearer ' . $this->supabaseKey,
+                    'Content-Type' => 'application/octet-stream'
+                ])->withBody($fileResource, 'application/octet-stream')
+                  ->put("{$this->storageUrl}/object/donation-reports/$fileName");
 
-            fclose($fileResource);
+                fclose($fileResource);
 
-            if (!$upload->successful()) {
-                return back()->with('error', 'Gagal upload gambar ke Supabase Storage!');
+                if ($upload->successful()) {
+                    $publicUrl = "{$this->supabaseUrl}/storage/v1/object/public/donation-reports/$fileName";
+                    $imageUrls[] = $publicUrl;
+                }
             }
 
-            // Perbaiki URL public gambar
-            $publicUrl = "{$this->supabaseUrl}/storage/v1/object/public/donation-reports/$fileName";
-            $data['report_image'] = $publicUrl;
+            $data['report_image'] = $imageUrls;
         }
 
         $response = Http::withHeaders([
@@ -161,7 +160,7 @@ class DonationReportController extends Controller
 
     public function destroy($id)
     {
-        // Get laporan dulu buat dapetin file gambar (optional)
+        // Ambil laporan dari Supabase
         $report = Http::withHeaders([
             'apikey' => $this->supabaseKey,
             'Authorization' => 'Bearer ' . $this->supabaseKey
@@ -170,24 +169,51 @@ class DonationReportController extends Controller
         $report = $report[0] ?? null;
 
         if ($report) {
-            // Ambil nama file dari URL gambar
-            $filePath = parse_url($report['report_image'], PHP_URL_PATH);
-            $fileName = basename($filePath);
+            // Cek apakah ada gambar
+            if (!empty($report['report_image'])) {
+                $filePaths = [];
 
-            // Delete file di storage Supabase
-            Http::withHeaders([
+                if (is_array($report['report_image'])) {
+                    foreach ($report['report_image'] as $imgUrl) {
+                        $filePath = parse_url($imgUrl, PHP_URL_PATH);
+                        $fileName = str_replace('/storage/v1/object/public/donation-reports/', '', $filePath);
+                        $filePaths[] = 'donation-reports/' . $fileName;
+                    }
+                } else {
+                    $filePath = parse_url($report['report_image'], PHP_URL_PATH);
+                    $fileName = str_replace('/storage/v1/object/public/donation-reports/', '', $filePath);
+                    $filePaths[] = 'donation-reports/' . $fileName;
+                }
+
+                // Hapus gambar lewat Supabase Storage API
+                $deleteImageResponse = Http::withHeaders([
+                    'apikey' => $this->supabaseKey,
+                    'Authorization' => 'Bearer ' . $this->supabaseKey,
+                    'Content-Type' => 'application/json'
+                ])->post("{$this->storageUrl}/object/donation-reports/delete", [
+                    'prefixes' => $filePaths
+                ]);
+
+                if (!$deleteImageResponse->successful()) {
+                    Log::error('Gagal menghapus gambar dari Supabase Storage: ' . $deleteImageResponse->body());
+                    return back()->with('error', 'Gagal menghapus gambar laporan.');
+                }
+            }
+
+            // Setelah hapus gambar, baru hapus data laporan
+            $deleteReportResponse = Http::withHeaders([
                 'apikey' => $this->supabaseKey,
-                'Authorization' => 'Bearer ' . $this->supabaseKey,
-                'Content-Type' => 'application/json'
-            ])->post("{$this->storageUrl}/object/donation-reports/$fileName");
+                'Authorization' => 'Bearer ' . $this->supabaseKey
+            ])->delete("{$this->supabaseUrl}/rest/v1/donation_reports?id=eq.$id");
+
+            if (!$deleteReportResponse->successful()) {
+                Log::error('Gagal menghapus laporan dari Supabase: ' . $deleteReportResponse->body());
+                return back()->with('error', 'Gagal menghapus laporan donasi.');
+            }
+
+            return redirect()->route('donation-reports.index')->with('success', 'Laporan donasi berhasil dihapus.');
         }
 
-        // Delete data dari table
-        Http::withHeaders([
-            'apikey' => $this->supabaseKey,
-            'Authorization' => 'Bearer ' . $this->supabaseKey
-        ])->delete("{$this->supabaseUrl}/rest/v1/donation_reports?id=eq.$id");
-
-        return redirect()->route('donation-reports.index')->with('success', 'Laporan donasi berhasil dihapus.');
+        return back()->with('error', 'Laporan tidak ditemukan.');
     }
 }
