@@ -34,23 +34,44 @@
         </div>
 
         {{-- Preview Gambar --}}
-<div>
-    <label class="block text-sm font-medium text-gray-700 mb-1">Gambar Saat Ini</label>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Gambar Saat Ini</label>
 
-    <div class="flex flex-wrap gap-4">
-        @php
-            $reportImages = is_string($report['report_image']) ? json_decode($report['report_image'], true) : $report['report_image'];
-        @endphp
+            <div class="flex flex-wrap gap-4">
+                @php
+                    $reportImages = is_string($report['report_image']) ? json_decode($report['report_image'], true) : $report['report_image'];
+                @endphp
 
-        @if(is_array($reportImages))
-            @foreach($reportImages as $image)
-                <img src="{{ $image }}" alt="Current Image" class="w-32 h-32 object-cover rounded-lg border border-gray-200 shadow-sm">
-            @endforeach
-        @else
-            <img src="{{ $report['report_image'] }}" alt="Current Image" class="w-32 h-32 object-cover rounded-lg border border-gray-200 shadow-sm">
-        @endif
-    </div>
-</div>
+                @if(is_array($reportImages))
+                    @foreach($reportImages as $image)
+                        <img src="{{ $image }}" alt="Current Image" class="w-32 h-32 object-cover rounded-lg border border-gray-200 shadow-sm">
+                    @endforeach
+                @else
+                    <img src="{{ $report['report_image'] }}" alt="Current Image" class="w-32 h-32 object-cover rounded-lg border border-gray-200 shadow-sm">
+                @endif
+            </div>
+        </div>
+
+        {{-- Preview PDF Saat Ini --}}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">PDF Saat Ini</label>
+            @if (!empty($report['report_pdf']))
+                <a href="{{ $report['report_pdf'] }}" target="_blank" class="text-blue-600 hover:underline">
+                    Lihat/Download PDF
+                </a>
+            @else
+                <p class="text-sm text-gray-500">Belum ada PDF diunggah.</p>
+            @endif
+        </div>
+
+        {{-- Upload PDF Baru --}}
+        <div>
+            <label for="report_pdf" class="block text-sm font-medium text-gray-700 mb-1">Upload PDF Baru (opsional)</label>
+            <input type="file" name="report_pdf" id="report_pdf" accept="application/pdf"
+                class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 p-2.5">
+            <p class="mt-1 text-xs text-gray-500">Kosongkan jika tidak ingin mengganti PDF.</p>
+        </div>
+
 
         {{-- Upload Gambar Baru --}}
         <div>

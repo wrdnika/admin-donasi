@@ -24,6 +24,7 @@
                     <th class="p-3 text-left">Target</th>
                     <th class="p-3 text-left">Deskripsi</th>
                     <th class="p-3 text-left">Gambar</th>
+                    <th class="p-3 text-left">PDF</th>
                     <th class="p-3 text-center">Aksi</th>
                 </tr>
             </thead>
@@ -81,6 +82,15 @@
                                     });
                                 });
                             </script>
+                        @endif
+                    </td>
+                    <td class="p-3">
+                        @if (!empty($report['report_pdf']))
+                            <a href="{{ $report['report_pdf'] }}" target="_blank" class="text-blue-600 hover:underline text-sm">
+                                Unduh PDF
+                            </a>
+                        @else
+                            <span class="text-gray-500 text-sm">–</span>
                         @endif
                     </td>
                     <td class="p-3 text-center flex justify-center space-x-2">

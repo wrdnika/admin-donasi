@@ -45,6 +45,15 @@
             <p class="mt-1 text-xs text-gray-500">Format gambar: JPG, PNG. Maks ukuran 2MB.</p>
         </div>
 
+        {{-- Upload PDF --}}
+        <div>
+            <label for="report_pdf" class="block text-sm font-medium text-gray-700 mb-1">Upload PDF Laporan (opsional)</label>
+            <input type="file" name="report_pdf" id="report_pdf" accept="application/pdf"
+                class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 p-2.5">
+            <p class="mt-1 text-xs text-gray-500">Format: PDF. Maks 5MB.</p>
+        </div>
+
+
         {{-- Submit Button --}}
         <div class="flex justify-between">
             <a href="{{ route('donation-reports.index') }}" class="inline-flex items-center px-5 py-2.5 bg-gray-200 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-300 transition duration-200">
